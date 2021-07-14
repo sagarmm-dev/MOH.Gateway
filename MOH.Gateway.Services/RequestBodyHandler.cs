@@ -1,34 +1,37 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MOH.Gateway.Services.Interfaces;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MOH.Gateway.Services
 {
-    public class RequestBodyHandler: IRequestBodyHandler
+    public class RequestBodyHandler : IRequestBodyHandler
     {
-     /// <summary>
-     /// Reads incoming request data
-     /// </summary>
-     /// <param name="httpRequest"></param>
-     /// <returns></returns>
-        public async Task<HttpContent> GetFormattedBody(HttpRequest httpRequest)
+        /// <summary>
+        /// Reads incoming request data
+        /// </summary>
+        /// <param name="httpRequest"></param>
+        /// <returns></returns>
+        public async Task<StringContent> GetFormattedBody(HttpRequest httpRequest) => await Task.Run(() =>
         {
-            var bytes = default(byte[]);
-
-            using (Stream receiveStream = httpRequest.Body)
+            var dicBody = httpRequest.HasFormContentType ? httpRequest.Form?.ToDictionary(x => x.Key, x => x.Value.ToString()) : new Dictionary<string, string>();
+            var dicHeader = httpRequest.Headers?.ToDictionary(x => x.Key, x => x.Value.ToString());
+            foreach (var item in dicBody)
             {
-                using (StreamReader readStream = new StreamReader(receiveStream))
-                {
-                    using (var memstream = new MemoryStream())
-                    {
-                        await readStream.BaseStream.CopyToAsync(memstream);
-                        bytes = memstream.ToArray();
-                    }
-                }
+                if (!dicHeader.ContainsKey(item.Key))
+                    dicHeader.Add(item.Key, item.Value);
             }
-            return new ByteArrayContent(bytes);
-        }
+            var dicJson = JsonConvert.SerializeObject(dicHeader);
+        
+            return new StringContent(dicJson, Encoding.UTF8, "application/json");
+            //return default(StringContent);
+
+        });
     }
 }

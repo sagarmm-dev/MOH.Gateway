@@ -35,6 +35,7 @@ namespace MOH.Gateway.Services
             var body = await _requestbodyhandler.GetFormattedBody(httpcontext.Request);
             var headers = _requestheaderhandler.GetFormattedHeaders(httpcontext.Request.Headers);
             var method = httpcontext.Request.Method;
+
             if (method == "POST")
                 return await _httpHelper.Post(hosturi, headers, body);
             else if (method == "GET")

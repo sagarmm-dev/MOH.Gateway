@@ -34,8 +34,13 @@ namespace MOH.Gateway.API.Controllers
         {
             try
             {
+                var apiPath = HttpContext.Request.Path.Value.TrimStart('/').ToLower();
+                if (string.IsNullOrWhiteSpace(apiPath))
+                    return new HttpResponseMessageResult(ReturnHttpResponseBadRequest());
+
                 //Check for authorization
-                if (!_noAuthConfig.Value.ApiEndPoints.ToLower().Contains(HttpContext.Request.Path.Value.TrimStart('/').ToLower()))
+                if (!_noAuthConfig.Value.ApiEndPoints.ToLower().Contains(apiPath) &&
+                    !_noAuthConfig.Value.ApiEndPontsWithToken.ToLower().Contains(apiPath))
                 {
                     var userToken = ValidateRequest();
                     if (userToken == null)
@@ -48,7 +53,7 @@ namespace MOH.Gateway.API.Controllers
                 var response = ReturnWithHeader(await _routingservice.RouteAsync(HttpContext));
 
                 //Check for Token generation on need basis
-                if (_noAuthConfig.Value.ApiEndPontsWithToken.ToLower().Contains(HttpContext.Request.Path.Value.TrimStart('/').ToLower()))
+                if (_noAuthConfig.Value.ApiEndPontsWithToken.ToLower().Contains(apiPath))
                 {
                     string contents = response.Content.ReadAsStringAsync().Result;
                     ServiceResult responseobject = JsonConvert.DeserializeObject<ServiceResult>(contents);
@@ -65,11 +70,11 @@ namespace MOH.Gateway.API.Controllers
             {
                 return new HttpResponseMessageResult(ReturnHttpResponseUnauthorizedResult());
             }
-            catch (TimeoutException)
+            catch (TimeoutException ex)
             {
                 return new HttpResponseMessageResult(ReturnHttpResponseTimeOutResult());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return new HttpResponseMessageResult(ReturnHttpResponseBadRequest());
             }

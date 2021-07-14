@@ -1,17 +1,22 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 
 namespace MOH.Gateway.Common
 {
     public class HttpHelper : IHttpHelper
     {
-        private IHttpClientFactory _httpclientfactory;
-        public HttpHelper(IHttpClientFactory httpclientfactory)
+        static HttpClient client = new HttpClient();
+        //private IHttpClientFactory _httpclientfactory;
+        public HttpHelper(
+            //IHttpClientFactory httpclientfactory
+            )
         {
-            _httpclientfactory = httpclientfactory;
+            //_httpclientfactory = httpclientfactory;
         }
         /// <summary>
         /// Performs Http post action
@@ -20,13 +25,13 @@ namespace MOH.Gateway.Common
         /// <param name="headers"></param>
         /// <param name="body"></param>
         /// <returns>Returns HttpResponseMessage</returns>
-        public async Task<HttpResponseMessage> Post(Uri uri, IDictionary<string, string> headers, HttpContent body)
+        public async Task<HttpResponseMessage> Post(Uri uri, IDictionary<string, string> headers, StringContent models)
         {
-            var client = _httpclientfactory.CreateClient();
+            //var client = _httpclientfactory.CreateClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", headers["Accept"]);
-            body.Headers.Add("Content-Type", headers["Content-Type"]);
-            return await client.PostAsync(uri, body);
+            //models.Headers.Add("Content-Type", headers["Content-Type"]);
+            return await client.PostAsync(uri, models);
         }
 
         /// <summary>
@@ -36,7 +41,7 @@ namespace MOH.Gateway.Common
         /// <returns>Returns HttpResponseMessage</returns>
         public async Task<HttpResponseMessage> Get(Uri uri, IDictionary<string, string> headers)
         {
-            var client = _httpclientfactory.CreateClient();
+            //var client = _httpclientfactory.CreateClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", headers["Accept"]);
             return await client.GetAsync(uri);
@@ -50,7 +55,7 @@ namespace MOH.Gateway.Common
         /// <returns>Returns HttpResponseMessage</returns>
         public async Task<HttpResponseMessage> Put(Uri uri, IDictionary<string, string> headers, HttpContent body)
         {
-            var client = _httpclientfactory.CreateClient();
+            //var client = _httpclientfactory.CreateClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", headers["Accept"]);
             body.Headers.Add("Content-Type", headers["Content-Type"]);
@@ -64,7 +69,7 @@ namespace MOH.Gateway.Common
         /// <returns>Returns HttpResponseMessage</returns>
         public async Task<HttpResponseMessage> Delete(Uri uri, IDictionary<string, string> headers)
         {
-            var client = _httpclientfactory.CreateClient();
+            //var client = _httpclientfactory.CreateClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.Add("Accept", headers["Accept"]);
             return await client.DeleteAsync(uri);

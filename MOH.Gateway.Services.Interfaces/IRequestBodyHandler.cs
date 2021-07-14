@@ -6,6 +6,6 @@ namespace MOH.Gateway.Services.Interfaces
 {
     public interface IRequestBodyHandler
     {
-        Task<HttpContent> GetFormattedBody(HttpRequest httpRequest);
+        Task<StringContent> GetFormattedBody(HttpRequest httpRequest);
     }
 }

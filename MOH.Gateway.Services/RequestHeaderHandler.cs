@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using MOH.Gateway.Services.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MOH.Gateway.Services
 {
@@ -13,12 +14,12 @@ namespace MOH.Gateway.Services
         /// <returns></returns>
         public Dictionary<string, string> GetFormattedHeaders(IHeaderDictionary headercollection)
         {
-            var headers = new Dictionary<string, string>();
-            foreach (var header in headercollection)
-            {
-                headers.Add(header.Key, header.Value);
-            }
-            return headers;
+            //var headers = new Dictionary<string, string>();
+            //foreach (var header in headercollection)
+            //{
+            //    headers.Add(header.Key, header.Value);
+            //}
+            return headercollection.ToDictionary(x => x.Key, x => x.Value.ToString());
         }
         //public Dictionary<string, string> GetFormattedHeaders(UserDTO userdto)
         //{
